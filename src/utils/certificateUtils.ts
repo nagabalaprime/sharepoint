@@ -1,7 +1,8 @@
 import forge from 'node-forge'
+import _ from "lodash";
 
 export const convertCertifcateToJWK = (certificate = '') => {
-  if (certificate != null || certificate !='') {
+  if (!_.isEmpty(certificate)) {
     console.log('cerficate', certificate)
     const forgedCertificate = forge.pki.certificateFromPem(certificate)
     const publicKey = forgedCertificate.publicKey as any

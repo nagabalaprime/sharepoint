@@ -27,20 +27,22 @@ interface IPublicKey {
 const CertificateUploadField: React.FC<IProps> = ({ fieldIndex  , deleteCallback , uploadFileCallback}) => {
   
   const deleteIcon: IIconProps = { iconName: "Delete" };
-  // const [certificate, setCertificate] = useState<string | ArrayBuffer>('');
   
   const hiddenFileInput = useRef<React.RefObject<HTMLInputElement>>();
+  const [fileName, setFileName] = useState('');
 
-  const showFile = async (e : any) => {
-    e.preventDefault();
+  const handleChange = async (event : any) => {
+    event.preventDefault();
+    setFileName(event?.target?.files[0]?.name);
+    
     const reader = new FileReader();
-    reader.onload = async (e) => {
-      const text = e?.target?.result || '';
+    reader.onload = async (event) => {
+      const text = event?.target?.result || '';
       // setCertificate(text);
       uploadFileCallback(text ,fieldIndex);
     };
 
-    reader.readAsText(e.target.files[0]);
+    reader.readAsText(event.target.files[0]);
   };
 
 
@@ -53,20 +55,39 @@ const CertificateUploadField: React.FC<IProps> = ({ fieldIndex  , deleteCallback
     deleteCallback(fieldIndex);
   };
 
-  
+  const renderDeleteButton = ()=>{
+
+    if(fieldIndex >= 4) {
+     return <IconButton
+      iconProps={deleteIcon}
+      splitButtonAriaLabel="See 2 options"
+      aria-roledescription="split button"
+      ariaLabel="New item"
+      onClick={deleteRow}
+    />
+    }
+
+    return null;
+   
+  }
+
+  const renderLabelText = ()=>{
+    return <Text className={fieldIndex < 4  ? "mandatoryLabelText" : "optionalCertificateLabelText"}>
+        Certificate {fieldIndex} {fieldIndex < 4 && <span style={{color:'red'}}>{"*"}</span>} 
+      </Text>
+  }
 
   return (
     <div className="uploadFieldContainer">
-      <Text className="uploadFieldComponent">
-        {" "}Certificate {fieldIndex}
-      </Text>
+      {renderLabelText()}
       <TextField
         className="uploadFieldComponent"
         placeholder="Select File here"
+        value={fileName}
       />
       <input
         type="file"
-        onChange={(e) => showFile(e)}
+        onChange={(e) => handleChange(e)}
         ref={hiddenFileInput as unknown as React.RefObject<HTMLInputElement>}
         style={{ display: 'none' }}
       />
@@ -75,13 +96,7 @@ const CertificateUploadField: React.FC<IProps> = ({ fieldIndex  , deleteCallback
         onClick={uploadClick}
         className="uploadFieldComponent"
       />
-      <IconButton
-        iconProps={deleteIcon}
-        splitButtonAriaLabel="See 2 options"
-        aria-roledescription="split button"
-        ariaLabel="New item"
-        onClick={deleteRow}
-      />
+      {renderDeleteButton()}
     </div>
   );
 };

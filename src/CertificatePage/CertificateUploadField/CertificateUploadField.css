@@ -9,3 +9,16 @@
 .uploadFieldComponent {
     margin-right:20px;
 }
+
+.mandatoryLabelText{
+    margin-right:10rem;
+}
+
+.optionalCertificateLabelText{
+    margin-right:10.5rem;
+}
+
+.page-description {
+    padding: 10px 0rem;
+    display: block;
+}
