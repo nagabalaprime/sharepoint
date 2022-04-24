@@ -87,10 +87,10 @@ const CertificatePage = () => {
       if(certificateDetail?.id >  3){
             return (
               <CertificateUploadField
-              fieldIndex={Number(certificateDetail?.id)}
-              key={index}
-              deleteCallback={deleteRow}
-              uploadFileCallback={uploadedFile}
+                fieldIndex={Number(certificateDetail?.id)}
+                key={index}
+                deleteCallback={deleteRow}
+                uploadFileCallback={uploadedFile}
               />);
               }
             }

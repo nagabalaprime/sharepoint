@@ -3,11 +3,9 @@ import _ from "lodash";
 
 export const convertCertifcateToJWK = (certificate = '') => {
   if (!_.isEmpty(certificate)) {
-    console.log('cerficate', certificate)
-    const forgedCertificate = forge.pki.certificateFromPem(certificate)
+    const forgedCertificate = forge.pki.certificateFromPem(certificate);
     const publicKey = forgedCertificate.publicKey as any
-    const rsaPublicKey = forge.pki.publicKeyToRSAPublicKey(publicKey)
-    console.log('rsaPublicKey', rsaPublicKey)
+    const rsaPublicKey = forge.pki.publicKeyToRSAPublicKey(publicKey);
     const encoded = forge.asn1
       .toDer(forge.pki.certificateToAsn1(forgedCertificate))
       .getBytes()
@@ -36,8 +34,6 @@ export const convertCertifcateToJWK = (certificate = '') => {
       x5t256: btoa(x5t256),
       alg: 'RSA-OAEP-256'
     }
-
-    console.log('sdjwk', sdJwk);
     return sdJwk;
   }
 
