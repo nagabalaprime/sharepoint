@@ -1,9 +1,11 @@
 import React, { useState  , useEffect} from "react";
-import { IIconProps, IconButton, initializeIcons, DefaultButton } from "@fluentui/react";
+import { IIconProps, IconButton, initializeIcons, DefaultButton , PrimaryButton } from "@fluentui/react";
 import { Text } from "@fluentui/react/lib/Text";
 import CertificateUploadField from "./CertificateUploadField/CertificateUploadField";
 import "./CertificatePage.css";
-import {convertCertifcateToJWK} from '../utils/certificateUtils';
+import {convertCertifcateToJWK, downloadJSON} from '../utils/certificateUtils';
+import { useId, useBoolean } from '@fluentui/react-hooks';
+import { Dialog, DialogType, DialogFooter  , } from '@fluentui/react/lib/Dialog';
 
 interface ICertificateDetail {
   id: number ,
@@ -23,6 +25,9 @@ const CertificatePage = () => {
             { id:optionalCeritificateIntialID , certificateValue:'' , jswToken:{} } ]);
 
   const addIcon: IIconProps = { iconName: "Add" };
+  const [hideDialog, { toggle: toggleHideDialog }] = useBoolean(true);
+  const labelId: string = useId('dialogLabel');
+  const subTextId: string = useId('subTextLabel');
 
   initializeIcons();
 
@@ -59,7 +64,8 @@ const CertificatePage = () => {
       return certificateDetail
         });
 
-      setcertificateDetailsList([...convertedCertificate])
+      setcertificateDetailsList([...convertedCertificate]);
+      toggleHideDialog();
   
   }
   const renderRequriedCertificates = ()=>{
@@ -111,6 +117,46 @@ const CertificatePage = () => {
   </div>
   }
 
+  const dialogContentProps = {
+    type: DialogType.normal,
+    title: 'Download security domain',
+    closeButtonAriaLabel: 'Close',
+    subText: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim sed quasi aspernatur, ratione aliquid ex, voluptate suscipit at assumenda inventore adipisci maiores placeat blanditiis sunt porro molestiae necessitatibus rem ullam?',
+  }
+
+  const dialogStyles = { main: { width: 600 } };
+
+  const modalProps = React.useMemo(
+    () => ({
+      titleAriaId: labelId,
+      subtitleAriaId: subTextId,
+      isBlocking: false,
+      styles: dialogStyles,
+    }),
+    [ labelId, subTextId],
+  );
+
+  const downloadFile =()=>{
+    const json = {name:'bala' , test:'test'}
+    downloadJSON(json);
+    toggleHideDialog();
+  }
+
+  const renderDialogBox = ()=>{
+    return (<Dialog
+        hidden={hideDialog}
+        onDismiss={toggleHideDialog}
+        dialogContentProps={dialogContentProps}
+        modalProps={modalProps}
+      >
+        <DialogFooter>
+          <PrimaryButton onClick={downloadFile} text="Download" />
+          <DefaultButton onClick={toggleHideDialog} text="Cancel" />
+        </DialogFooter>
+      </Dialog>
+    )
+  }
+
   return (
     <div className="certificate-page">
       <Text variant="xLarge" style={{fontSize: '30px'}}> Activate Managed HSM </Text>
@@ -125,11 +171,13 @@ const CertificatePage = () => {
 
         {renderAddButton()}
 
-      <DefaultButton
-        text="Convert"
-        onClick={convertToJWK}
-        className="covert-button"
-      />
+        <DefaultButton
+          text="Convert"
+          onClick={convertToJWK}
+          className="covert-button"
+        />
+
+        {renderDialogBox()}
       </div>
     </div>
   );

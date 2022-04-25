@@ -1,11 +1,11 @@
 import forge from 'node-forge'
-import _ from "lodash";
+import _ from 'lodash'
 
 export const convertCertifcateToJWK = (certificate = '') => {
   if (!_.isEmpty(certificate)) {
-    const forgedCertificate = forge.pki.certificateFromPem(certificate);
+    const forgedCertificate = forge.pki.certificateFromPem(certificate)
     const publicKey = forgedCertificate.publicKey as any
-    const rsaPublicKey = forge.pki.publicKeyToRSAPublicKey(publicKey);
+    const rsaPublicKey = forge.pki.publicKeyToRSAPublicKey(publicKey)
     const encoded = forge.asn1
       .toDer(forge.pki.certificateToAsn1(forgedCertificate))
       .getBytes()
@@ -34,8 +34,24 @@ export const convertCertifcateToJWK = (certificate = '') => {
       x5t256: btoa(x5t256),
       alg: 'RSA-OAEP-256'
     }
-    return sdJwk;
+    return sdJwk
   }
 
-  return '';
+  return ''
+}
+
+export const downloadJSON = (jsonToDownload: Object) => {
+  if (!_.isEmpty(jsonToDownload)) {
+    const json = JSON.stringify(jsonToDownload)
+    const blob = new Blob([json], { type: 'application/json' })
+    const url = window.URL.createObjectURL(new Blob([json]))
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', `${'download'}.${'json'}`)
+    document.body.appendChild(link)
+    link.click()
+
+    // Clean up and remove the link
+    link?.parentNode?.removeChild(link)
+  }
 }
