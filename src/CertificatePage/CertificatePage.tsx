@@ -17,7 +17,7 @@ interface ICertificateDetail {
 
 const CertificatePage = () => {
   const optionalCeritificateIntialID = 4;
-  const [certificateDetailsList, setcertificateDetailsList] = 
+  const [certificateDetailsList, setCertificateDetailsList] = 
           useState<ICertificateDetail[]>([
             { id:1 , certificateValue:'' , jswToken:{} } ,
             {id:2 , certificateValue:'' , jswToken:{} } ,
@@ -33,12 +33,12 @@ const CertificatePage = () => {
 
   const addNewCerficateField = () => {
     const newCertificateID = (certificateDetailsList.length + 1  );
-    setcertificateDetailsList([...certificateDetailsList, {id:newCertificateID , certificateValue:'' , jswToken:{}}]);
+    setCertificateDetailsList([...certificateDetailsList, {id:newCertificateID , certificateValue:'' , jswToken:{}}]);
   };
 
   const deleteRow = (index = optionalCeritificateIntialID) => {
      const filteredCertificate = certificateDetailsList.filter(item => item?.id !== index);
-     setcertificateDetailsList([...filteredCertificate]);
+     setCertificateDetailsList([...filteredCertificate]);
   };
 
   const uploadedFile = (text = '' ,fieldIndex = optionalCeritificateIntialID)=>{
@@ -50,7 +50,7 @@ const CertificatePage = () => {
         : certificateDetail
     );
 
-    setcertificateDetailsList([...updatedCertificateList]);
+    setCertificateDetailsList([...updatedCertificateList]);
 
   }
 
@@ -61,10 +61,10 @@ const CertificatePage = () => {
       const JWKValue = convertCertifcateToJWK(certificateDetail?.certificateValue);
       certificateDetail['jswToken'] = JWKValue ;
 
-      return certificateDetail
+      return certificateDetail;
         });
 
-      setcertificateDetailsList([...convertedCertificate]);
+      setCertificateDetailsList([...convertedCertificate]);
       toggleHideDialog();
   
   }
@@ -137,10 +137,16 @@ const CertificatePage = () => {
   );
 
   const downloadFile =()=>{
-    const json = {name:'bala' , test:'test'}
-    downloadJSON(json);
+    // replace json with response from service call
+    const json = {name:'bala' , test:'test'};
+    setTimeout(()=>{
+      downloadJSON(json);
+    },10000)
+    
     toggleHideDialog();
   }
+  
+  
 
   const renderDialogBox = ()=>{
     return (<Dialog
@@ -157,6 +163,17 @@ const CertificatePage = () => {
     )
   }
 
+  
+  const mandatoryFieldCheck =()=>{
+    return certificateDetailsList.reduce((certificateStatus , certificateDetail)=>{
+      // filter out mandatory certificate on list first
+      if(certificateDetail?.id < optionalCeritificateIntialID) {
+            return certificateStatus && !!certificateDetail?.certificateValue;
+      }
+   return certificateStatus;
+    }, true);
+  }
+
   return (
     <div className="certificate-page">
       <Text variant="xLarge" style={{fontSize: '30px'}}> Activate Managed HSM </Text>
@@ -171,14 +188,16 @@ const CertificatePage = () => {
 
         {renderAddButton()}
 
-        <DefaultButton
-          text="Convert"
-          onClick={convertToJWK}
-          className="covert-button"
-        />
+  
 
         {renderDialogBox()}
       </div>
+      <DefaultButton
+          text="Convert"
+          onClick={convertToJWK}
+          className="a"
+          disabled={false}
+        />
     </div>
   );
 };
